@@ -38,13 +38,5 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-	"scripts": {
-        "post-install-cmd": [
-            "@php artisan vendor:publish --tag=Experteam\\ApiLaravelCrud\\ApiLaravelCrudServiceProvider"
-        ],
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=Experteam\\ApiLaravelCrud\\ApiLaravelCrudServiceProvider"
-        ]
-    }
+    "prefer-stable": true
 }
