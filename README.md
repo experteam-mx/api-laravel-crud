@@ -8,14 +8,15 @@ It includes:
 
 ### Install
 
-1. Configure required package on `composer.json`: <br>
+Run the following commands to install: <br>
 ```
-"require": {
-    "experteam/api-laravel-crud": "dev-master#[commit-hash]"
-}
+composer require experteam/api-laravel-crud
+
+php artisan vendor:publish --tag=lang
 ```
 
-2. Run the composer command to install or update the package: <br>
+### Update
+Run the composer command to update the package: <br>
 ```
 composer update experteam/api-laravel-crud
 ```
