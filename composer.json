@@ -1,7 +1,7 @@
 {
     "name": "experteam/api-laravel-crud",
     "description": "Library to help with api CRUDs definition",
-    "homepage": "https://github.com/experteam/api-laravel-crud",
+    "homepage": "https://github.com/experteam-mx/api-laravel-crud",
     "keywords": [
         "laravel",
         "crud",
