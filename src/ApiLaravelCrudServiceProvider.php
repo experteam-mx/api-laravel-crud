@@ -23,10 +23,8 @@ class ApiLaravelCrudServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $langDir =  __DIR__.'/../resources/lang/en';
-
         $this->publishes([
-            $langDir => resource_path('/lang/en'),
+            __DIR__.'/../resources/lang/en' => resource_path('/lang/en'),
         ], 'lang');
     }
 }
