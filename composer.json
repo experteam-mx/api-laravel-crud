@@ -31,7 +31,5 @@
                 "Experteam\\ApiLaravelCrud\\ApiLaravelCrudServiceProvider"
             ]
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
