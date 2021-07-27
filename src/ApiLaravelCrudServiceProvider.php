@@ -2,6 +2,7 @@
 
 namespace Experteam\ApiLaravelCrud;
 
+
 use Illuminate\Support\ServiceProvider;
 
 class ApiLaravelCrudServiceProvider extends ServiceProvider
