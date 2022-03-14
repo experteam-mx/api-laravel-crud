@@ -3,6 +3,7 @@
 namespace Experteam\ApiLaravelCrud;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 trait AdvancedQueryFilters
 {
@@ -103,6 +104,7 @@ trait AdvancedQueryFilters
         $model = $query->getModel();
 
         foreach ($relations as $relation) {
+            $relation = Str::camel($relation);
             $modelRelated = $model->$relation()->getRelated();
 
             if (!$this->joinExists($query, $modelRelated->getTable())) {
