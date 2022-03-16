@@ -3,17 +3,18 @@
 
 namespace Experteam\ApiLaravelCrud;
 
-
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
 
 trait ModelPaginate
 {
+    use HasNestedParam;
 
     /**
      * @param Builder $query
      * @return Builder
-     * @throws \Exception
+     * @throws Exception
      */
     public function scopeCustomPaginate(Builder $query)
     {
@@ -25,22 +26,22 @@ trait ModelPaginate
             ->get('limit', 50);
 
         if($limit > 1000)
-            throw new \Exception(__('apiCrud.more_than_1000'));
+            throw new Exception(sprintf('You can\'t request more than 1000 records at the same time.'));
 
         $order = request()->query
             ->get('order', []);
 
         if (!is_array($order))
-            throw new \Exception(__('apiCrud.order_invalid_format'));
+            throw new Exception('Invalid parameter order, incorrect format.');
 
         foreach ($order as $field => $direction) {
             if (!in_array(strtoupper($direction), ['ASC', 'DESC']))
-                throw new \Exception(__('apiCrud.order_invalid_direction', ['value' => $direction]));
+                throw new Exception(sprintf('Invalid parameter order, value "%s" is not allowed', $direction));
 
-            if (!Schema::hasColumn($query->getModel()->getTable(), $field))
-                throw new \Exception(__('apiCrud.order_invalid_field', ['field' => $field]));
+            if (!$this->isValidParam($query, $field))
+                throw new Exception(sprintf('Invalid parameter order, field "%s" not found or is not allowed.', $field));
 
-            $query->orderBy($field, $direction);
+            $query->orderBy($this->getNestedParam($query, $field, true), $direction);
         }
 
         // For Location header
