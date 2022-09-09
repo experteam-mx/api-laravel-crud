@@ -1,11 +1,10 @@
 <?php
 
 
-namespace Experteam\ApiLaravelCrud;
+namespace Experteam\ApiLaravelCrud\Models;
 
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Schema;
 
 trait ModelPaginate
 {

@@ -2,6 +2,7 @@
 
 namespace Experteam\ApiLaravelCrud;
 
+use Experteam\ApiLaravelCrud\Models\HasNestedParam;
 use Illuminate\Database\Eloquent\Builder;
 
 trait AdvancedQueryFilters

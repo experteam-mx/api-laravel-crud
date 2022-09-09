@@ -13,12 +13,17 @@
             "name": "Renán Rivadeneira",
             "email": "renan.rivadeneira@experteam.com.ec",
             "role": "Developer"
+        },
+        {
+            "name": "Iraldo Arevalo",
+            "email": "iraldo.arevalo@experteam.com.ec"
         }
     ],
     "require": {
         "php": ">=7.2 || 8.0",
         "ext-json": "*",
-        "illuminate/support": ">=5.4.0"
+        "laravel/framework": "^9.28",
+        "experteam/api-laravel-base": "^1.1"
     },
     "autoload": {
         "psr-4": {

@@ -1,17 +1,15 @@
 <?php
 
-namespace Experteam\ApiLaravelCrud;
+namespace Experteam\ApiLaravelCrud\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 trait HasNestedParam
 {
-
     /**
      * @param Builder $query
      * @param $param
