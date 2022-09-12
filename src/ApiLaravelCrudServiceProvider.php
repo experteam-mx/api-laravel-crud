@@ -2,7 +2,6 @@
 
 namespace Experteam\ApiLaravelCrud;
 
-
 use Illuminate\Support\ServiceProvider;
 
 class ApiLaravelCrudServiceProvider extends ServiceProvider
@@ -14,7 +13,8 @@ class ApiLaravelCrudServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // Event service provider
+        app()->register(EventServiceProvider::class);
     }
 
     /**
