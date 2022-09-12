@@ -16,15 +16,20 @@ class ModelChanged
     use SerializesModels;
 
     public $model;
+    public $changed;
+    public $old;
+    public $new;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Model $model)
-    {
+    public function __construct(Model $model) {
         $this->model = $model;
+        $this->changed = $model->getDirty();
+        $this->old = $model->getRawOriginal();
+        $this->new = $model->getAttributes();
     }
 
     /**

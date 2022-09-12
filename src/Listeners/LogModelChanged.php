@@ -15,21 +15,13 @@ class LogModelChanged implements ShouldQueue
      */
     public function handle(ModelChanged $event)
     {
-        $model = $event->model;
-        $class = class_basename($model);
-
-        dump([
-            'model' => $class,
-            'changes' => $model->getDirty(),
-            'old' => $model->getRawOriginal(),
-            'new' => $model->getAttributes(),
-        ]);
+        $class = class_basename($event->model);
 
         \ESLog::notice("Model [$class] changed!", [
             'model' => $class,
-            'changes' => $model->getDirty(),
-            'old' => $model->getRawOriginal(),
-            'new' => $model->getAttributes(),
+            'changes' => $event->changed,
+            'old' => $event->old,
+            'new' => $event->new,
         ]);
     }
 }
