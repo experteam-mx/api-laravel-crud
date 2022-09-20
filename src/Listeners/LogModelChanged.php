@@ -18,7 +18,11 @@ class LogModelChanged implements ShouldQueue
         $fqn = get_class($event->model);
         $className = class_basename($event->model);
 
-        $allowedModels = config('experteam-crud.logger.models');
+        $allowedModels = config('experteam-crud.logger.models', []);
+
+        if (empty($allowedModels)) {
+            return;
+        }
 
         $coincidences = array_filter($allowedModels, function ($model) use ($fqn) {
             return $model === $fqn;
