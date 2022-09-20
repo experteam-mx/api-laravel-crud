@@ -27,5 +27,9 @@ class ApiLaravelCrudServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/lang/en' => resource_path('/lang/en'),
         ], 'lang');
+
+        $this->publishes([
+            __DIR__ . '/../config/experteam-crud.php' => config_path('experteam-crud.php'),
+        ], 'config');
     }
 }
