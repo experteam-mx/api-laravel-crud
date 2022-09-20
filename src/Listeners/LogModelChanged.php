@@ -15,13 +15,22 @@ class LogModelChanged implements ShouldQueue
      */
     public function handle(ModelChanged $event)
     {
-        $class = class_basename($event->model);
+        $fqn = get_class($event->model);
+        $className = class_basename($event->model);
 
-        \ESLog::notice("Model [$class] changed!", [
-            'model' => $class,
-            'changes' => $event->changed,
-            'old' => $event->old,
-            'new' => $event->new,
-        ]);
+        $allowedModels = config('experteam-crud.logger.models');
+
+        $coincidences = array_filter($allowedModels, function ($model) use ($fqn) {
+            return $model === $fqn;
+        });
+
+        if (!empty($coincidences)) {
+            \ESLog::notice("Model [$className] changed!", [
+                'model' => $className,
+                'changes' => $event->changed,
+                'old' => $event->old,
+                'new' => $event->new,
+            ]);
+        }
     }
 }
