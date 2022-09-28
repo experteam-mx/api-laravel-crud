@@ -21,5 +21,9 @@ Run the composer command to update the package: <br>
 composer update experteam/api-laravel-crud
 ```
 
+### Use advanced Queries with mongoDB
+To use advanced queries on mongoDB you need to add a public property to your model to identify it as a MongoDB collection<br>
+`public bool $isMongoDB = true;`
+
 ### License
 [MIT license](https://opensource.org/licenses/MIT).

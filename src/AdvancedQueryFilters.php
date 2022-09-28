@@ -15,7 +15,7 @@ trait AdvancedQueryFilters
      * @param array $params
      * @return Builder|mixed
      */
-    public function queryFilter(Builder $query, array $params)
+    public function queryFilter($query, array $params)
     {
         $filters = request()->query
             ->all();
@@ -23,7 +23,7 @@ trait AdvancedQueryFilters
         $pendingFilters = [];
         $table = $query->getModel()->getTable();
 
-        if ($query->getModel() instanceof Model)
+        if (!($query->getModel()->isMongoDB ?? false))
             $query->select("$table.*");
 
         foreach ($params as $param) {
@@ -35,7 +35,7 @@ trait AdvancedQueryFilters
             if (is_array($value)) {
                 $param = $this->isNestedParam($param)
                     ? $this->getNestedParam($query, $param)
-                    : (($query->getModel() instanceof Model) ? "$table.$param" : $param);
+                    : (!($query->getModel()->isMongoDB ?? false) ? "$table.$param" : $param);
 
                 foreach ($value as $filter => $_value) {
                     if (is_numeric($filter)) {
@@ -47,7 +47,7 @@ trait AdvancedQueryFilters
             } elseif ($this->isNestedParam($param)) {
                 $query->where($this->getNestedParam($query, $param), $value);
             } else {
-                $query->where((($query->getModel() instanceof Model) ? "$table.$param" : $param), is_numeric($value) ? (float)$value : $value);
+                $query->where((!($query->getModel()->isMongoDB ?? false) ? "$table.$param" : $param), is_numeric($value) ? (float)$value : $value);
             }
         }
 
