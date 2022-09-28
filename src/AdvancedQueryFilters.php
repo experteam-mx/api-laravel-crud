@@ -4,6 +4,7 @@ namespace Experteam\ApiLaravelCrud;
 
 use Experteam\ApiLaravelCrud\Models\HasNestedParam;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 trait AdvancedQueryFilters
 {
@@ -21,7 +22,9 @@ trait AdvancedQueryFilters
 
         $pendingFilters = [];
         $table = $query->getModel()->getTable();
-        $query->select("$table.*");
+
+        if ($query->getModel() instanceof Model)
+            $query->select("$table.*");
 
         foreach ($params as $param) {
             if (!isset($filters[$param]))
@@ -32,7 +35,7 @@ trait AdvancedQueryFilters
             if (is_array($value)) {
                 $param = $this->isNestedParam($param)
                     ? $this->getNestedParam($query, $param)
-                    : "$table.$param";
+                    : (($query->getModel() instanceof Model) ? "$table.$param" : $param);
 
                 foreach ($value as $filter => $_value) {
                     if (is_numeric($filter)) {
@@ -44,7 +47,7 @@ trait AdvancedQueryFilters
             } elseif ($this->isNestedParam($param)) {
                 $query->where($this->getNestedParam($query, $param), $value);
             } else {
-                $query->where("$table.$param", $value);
+                $query->where((($query->getModel() instanceof Model) ? "$table.$param" : $param), is_numeric($value) ? (float)$value : $value);
             }
         }
 
@@ -64,9 +67,15 @@ trait AdvancedQueryFilters
 
     private function setQueryGroup($query, $filter, $param, $value)
     {
+        $value = is_numeric($value) ? (float)$value : $value;
         switch ($filter) {
             case 'lk':
                 $query->where($param, 'like', "%{$value}%");
+                break;
+            case 'in':
+                $query->WhereIn($param, array_map(function($value) {
+                    return is_numeric($value) ? (float)$value : $value;
+                }, explode(',', $value)));
                 break;
             case 'olk':
                 $query->orWhere($param, 'like', "%{$value}%");
@@ -96,6 +105,9 @@ trait AdvancedQueryFilters
                 $query->orWhere($param, '<=', $value);
                 break;
             case 'eq':
+                $query->Where($param, $value);
+                break;
+            case 'oeq':
                 $query->orWhere($param, $value);
                 break;
         }
