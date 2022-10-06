@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'model_listener' => [
+    'listener' => [
 
         /*
          * Models mapping
