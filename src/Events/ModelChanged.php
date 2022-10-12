@@ -32,7 +32,10 @@ class ModelChanged
         $this->changed = $model->getDirty();
         $this->old = $model->getRawOriginal();
         $this->new = $model->getAttributes();
-        $this->user = $user;
+        $this->user = [
+            'id' => $user->id,
+            'username' => $user->username,
+        ];
     }
 
     /**
