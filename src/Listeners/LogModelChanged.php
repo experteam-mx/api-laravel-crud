@@ -18,6 +18,7 @@ class LogModelChanged implements ShouldQueue
         $className = class_basename($event->model);
 
         \ESLog::notice("Model [$className] changed!", [
+            'user' => $event->user,
             'model' => $className,
             'changes' => $event->changed,
             'old' => $event->old,
