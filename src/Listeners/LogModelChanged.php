@@ -22,6 +22,10 @@ class LogModelChanged implements ShouldQueue
             'changes' => $event->changed,
             'old' => $event->old,
             'new' => $event->new,
+            'user' => [
+                'id' => $event->user->id,
+                'username' => $event->user->username
+            ]
         ]);
     }
 }

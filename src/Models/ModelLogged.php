@@ -3,6 +3,7 @@
 namespace Experteam\ApiLaravelCrud\Models;
 
 use Experteam\ApiLaravelCrud\Events\ModelChanged;
+use Illuminate\Support\Facades\Auth;
 
 trait ModelLogged
 {
@@ -10,6 +11,10 @@ trait ModelLogged
     {
         static::saving(function ($model) {
             if ($model->isClean()) {
+                return;
+            }
+
+            if (!$user = Auth::user()) {
                 return;
             }
 
@@ -24,7 +29,7 @@ trait ModelLogged
                 return $model === $fqn;
             });
 
-            ModelChanged::dispatchUnless(empty($coincidences), $model);
+            ModelChanged::dispatchUnless(empty($coincidences), $model, $user);
         });
     }
 }
