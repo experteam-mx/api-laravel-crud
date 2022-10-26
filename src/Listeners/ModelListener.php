@@ -74,6 +74,8 @@ abstract class ModelListener
                 $key .= $model->$suffix;
             }
 
+            $model->load($map['relations'] ?? []);
+
             switch ($event) {
                 case self::SAVE_MODEL:
                     Redis::hset($key, $model->$id, json_encode($model->toArray()));
