@@ -27,7 +27,9 @@ abstract class ModelListener
         bool $toRedis = true,
         bool $dispatchMessage = true,
         bool $toStreamCompute = true
-    ) {
+    )
+    {
+        $appPrefix = config('experteam-crud.listener.prefix', 'companies');
         $class = str_replace('App\\Models\\', '', get_class($model));
 
         $maps = array_filter($map, function ($m) use ($class) {
@@ -36,16 +38,16 @@ abstract class ModelListener
 
         foreach ($maps as $map) {
             if ($toRedis && $map['toRedis']) {
-                self::toRedis($model, $map, $event);
+                self::toRedis($model, $map, $event, $appPrefix);
             }
 
             if ($dispatchMessage && $map['dispatchMessage']) {
-                self::dispatchMessage($model, $map, $event);
+                self::dispatchMessage($model, $map, $event, $appPrefix);
             }
 
             if ($toStreamCompute && $map['toStreamCompute']) {
                 Redis::xadd(
-                    "streamCompute.companies.{$map['prefix']}",
+                    "streamCompute.$appPrefix.{$map['prefix']}",
                     '*',
                     ['message' => json_encode($model->toArray())]
                 );
@@ -57,10 +59,11 @@ abstract class ModelListener
      * @param object $model
      * @param array $map
      * @param int $event
+     * @param string $appPrefix
      */
-    public static function toRedis(object $model, array $map, int $event)
+    public static function toRedis(object $model, array $map, int $event, string $appPrefix)
     {
-        $key = "companies.{$map['prefix']}";
+        $key = "$appPrefix.{$map['prefix']}";
 
         $entityConfig = $map['entityConfig'] ?? false;
 
@@ -130,10 +133,11 @@ abstract class ModelListener
      * @param object $model
      * @param array $map
      * @param int $event
+     * @param string $appPrefix
      */
-    public static function dispatchMessage(object $model, array $map, int $event)
+    public static function dispatchMessage(object $model, array $map, int $event, string $appPrefix)
     {
-        $prefix = "companies.{$map['prefix']}";
+        $prefix = "$appPrefix.{$map['prefix']}";
 
         $key = "messages.$prefix";
         if ($event == self::DELETE_MODEL) {
