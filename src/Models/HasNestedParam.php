@@ -18,6 +18,10 @@ trait HasNestedParam
      */
     private function getNestedParam(Builder $query, $param, bool $leftJoin = false): string
     {
+        if ($query->getModel()->isMongoDB ?? false) {
+            return $param;
+        }
+
         [$relations, $field] = $this->splitParamParts($param);
 
         $table = $this->addJoinForRelations($query, $relations, $leftJoin);
@@ -34,12 +38,15 @@ trait HasNestedParam
     {
         $joins = $query->getQuery()->joins;
 
-        if (is_null($joins))
+        if (is_null($joins)) {
             return false;
+        }
 
-        foreach ($joins as $join)
-            if ($join->table == $table)
+        foreach ($joins as $join) {
+            if ($join->table == $table) {
                 return true;
+            }
+        }
 
         return false;
     }
@@ -60,12 +67,13 @@ trait HasNestedParam
             $modelRelated = $relationObject->getRelated();
 
             if (!$this->joinExists($query, $modelRelated->getTable())) {
-
-                if ($relationObject instanceof BelongsTo)
+                if ($relationObject instanceof BelongsTo) {
                     $this->joinBelongsTo($query, $model, $modelRelated, $relationObject, $leftJoin);
+                }
 
-                if ($relationObject instanceof BelongsToMany)
+                if ($relationObject instanceof BelongsToMany) {
                     $this->joinBelongsToMany($query, $model, $modelRelated, $relationObject, $leftJoin);
+                }
             }
 
             $model = $modelRelated;
@@ -86,10 +94,11 @@ trait HasNestedParam
         $first = sprintf('%s.%s', $model->getTable(), $relationObject->getForeignKeyName());
         $second = sprintf('%s.%s', $modelRelated->getTable(), $modelRelated->getKeyName());
 
-        if ($leftJoin)
+        if ($leftJoin) {
             $query->leftJoin($modelRelated->getTable(), $first, $second);
-        else
+        } else {
             $query->join($modelRelated->getTable(), $first, $second);
+        }
     }
 
     /**
@@ -99,8 +108,13 @@ trait HasNestedParam
      * @param BelongsToMany $relationObject
      * @param bool $leftJoin
      */
-    private function joinBelongsToMany(Builder $query, $model, $modelRelated, BelongsToMany $relationObject, bool $leftJoin)
-    {
+    private function joinBelongsToMany(
+        Builder $query,
+        $model,
+        $modelRelated,
+        BelongsToMany $relationObject,
+        bool $leftJoin
+    ) {
         $pivotFirst = sprintf('%s.%s', $model->getTable(), $model->getKeyName());
         $pivotSecond = sprintf('%s.%s', $relationObject->getTable(), $relationObject->getForeignPivotKeyName());
 
@@ -127,14 +141,14 @@ trait HasNestedParam
         $field = $param;
 
         if ($this->isNestedParam($param)) {
-
             [$relations, $field] = $this->splitParamParts($param);
 
             foreach ($relations as $relation) {
                 $_relation = Str::camel($relation);
 
-                if (!method_exists($model, $_relation))
+                if (!method_exists($model, $_relation)) {
                     return false;
+                }
 
                 $model = $model->$_relation()->getRelated();
             }
