@@ -45,9 +45,9 @@ trait AdvancedQueryFilters
                     }
                 }
             } elseif ($this->isNestedParam($param)) {
-                $query->where($this->getNestedParam($query, $param), $value);
+                $query = $this->setQueryGroup($query, 'eq', $this->getNestedParam($query, $param), $value);
             } else {
-                $query->where((!($query->getModel()->isMongoDB ?? false) ? "$table.$param" : $param), is_numeric($value) ? (float)$value : $value);
+                $query = $this->setQueryGroup($query, 'eq', (!($query->getModel()->isMongoDB ?? false) ? "$table.$param" : $param), $value);
             }
         }
 
@@ -67,10 +67,13 @@ trait AdvancedQueryFilters
 
     private function setQueryGroup($query, $filter, $param, $value)
     {
-        $value = is_numeric($value) ? (float)$value : $value;
+        $value = $query->getModel()->getCast($param, $value);
+
         switch ($filter) {
             case 'lk':
-                $query->where($param, 'like', "%{$value}%");
+                if (!empty($value)) {
+                    $query->where($param, 'like', "%{$value}%");
+                }
                 break;
             case 'in':
                 $query->WhereIn($param, array_map(function($value) {
@@ -78,7 +81,9 @@ trait AdvancedQueryFilters
                 }, explode(',', $value)));
                 break;
             case 'olk':
-                $query->orWhere($param, 'like', "%{$value}%");
+                if (!empty($value)) {
+                    $query->orWhere($param, 'like', "%{$value}%");
+                }
                 break;
             case 'gt':
                 $query->where($param, '>', $value);
