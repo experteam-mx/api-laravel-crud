@@ -27,6 +27,10 @@ return [
     */
 
     'listener' => [
+        /*
+         * Prefix witch
+         */
+        'prefix' => 'companies',
 
         /*
          * Models mapping
