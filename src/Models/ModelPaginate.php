@@ -18,17 +18,15 @@ trait ModelPaginate
     public function scopeCustomPaginate(Builder $query)
     {
 
-        $offset = request()->query
-            ->get('offset', 0);
+        $offset = request()->input('offset', 0);
 
-        $limit = request()->query
-            ->get('limit', 50);
+        $limit = request()->input('limit', 50);
 
         if($limit > 1000)
             throw new Exception(sprintf('You can\'t request more than 1000 records at the same time.'));
 
-        $order = request()->query
-            ->get('order', []);
+        $order = request()
+            ->input('order');
 
         if (!is_array($order))
             throw new Exception('Invalid parameter order, incorrect format.');
