@@ -26,7 +26,7 @@ trait ModelPaginate
             throw new Exception(sprintf('You can\'t request more than 1000 records at the same time.'));
 
         $order = request()
-            ->input('order');
+            ->input('order', []);
 
         if (!is_array($order))
             throw new Exception('Invalid parameter order, incorrect format.');
