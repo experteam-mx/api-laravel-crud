@@ -67,7 +67,9 @@ trait AdvancedQueryFilters
 
     private function setQueryGroup($query, $filter, $param, $value)
     {
-        $value = $query->getModel()->getCast($param, $value);
+        if ($query->getModel()->isMongoDB ?? false) {
+            $value = $query->getModel()->getCast($param, $value);
+        }
 
         switch ($filter) {
             case 'lk':
