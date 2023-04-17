@@ -67,7 +67,7 @@ trait AdvancedQueryFilters
 
     private function setQueryGroup($query, $filter, $param, $value)
     {
-        if ($query->getModel()->isMongoDB ?? false) {
+        if (($query->getModel()->isMongoDB ?? false) && $filter != 'in') {
             $value = $query->getModel()->getCast($param, $value);
         }
 
@@ -78,8 +78,8 @@ trait AdvancedQueryFilters
                 }
                 break;
             case 'in':
-                $query->WhereIn($param, array_map(function($value) {
-                    return is_numeric($value) ? (float)$value : $value;
+                $query->WhereIn($param, array_map(function($value) use ($query, $param) {
+                    return $query->getModel()->getCast($param, $value);
                 }, explode(',', $value)));
                 break;
             case 'olk':
