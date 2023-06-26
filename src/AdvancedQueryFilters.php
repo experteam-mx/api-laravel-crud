@@ -79,7 +79,9 @@ trait AdvancedQueryFilters
                 break;
             case 'in':
                 $query->WhereIn($param, array_map(function($value) use ($query, $param) {
-                    return $query->getModel()->getCast($param, $value);
+                    return $query->getModel()->isMongoDB ?? false ?
+                        $query->getModel()->getCast($param, $value) :
+                        $value;
                 }, explode(',', $value)));
                 break;
             case 'olk':
