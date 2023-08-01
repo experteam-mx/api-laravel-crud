@@ -2,9 +2,10 @@
 
 namespace Experteam\ApiLaravelCrud\Listeners;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Redis;
 
-abstract class ModelListener
+abstract class ModelListener implements ShouldQueue
 {
     const SAVE_MODEL = 0;
     const DELETE_MODEL = 1;
