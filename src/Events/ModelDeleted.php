@@ -13,17 +13,12 @@ class ModelDeleted
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $model;
-
     /**
      * Create a new event instance.
      *
      * @param Model $model
      */
-    public function __construct(Model $model)
-    {
-        $this->model = $model;
-    }
+    public function __construct(public Model $model) { }
 
     /**
      * Get the channels the event should broadcast on.

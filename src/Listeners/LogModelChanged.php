@@ -3,9 +3,8 @@
 namespace Experteam\ApiLaravelCrud\Listeners;
 
 use Experteam\ApiLaravelCrud\Events\ModelChanged;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
-class LogModelChanged implements ShouldQueue
+class LogModelChanged
 {
     /**
      * Handle the event.
@@ -13,7 +12,7 @@ class LogModelChanged implements ShouldQueue
      * @param ModelChanged $event
      * @return void
      */
-    public function handle(ModelChanged $event)
+    public function handle(ModelChanged $event): void
     {
         $className = class_basename($event->model);
 

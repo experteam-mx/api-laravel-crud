@@ -2,10 +2,9 @@
 
 namespace Experteam\ApiLaravelCrud\Listeners;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Redis;
 
-abstract class ModelListener implements ShouldQueue
+abstract class ModelListener
 {
     const SAVE_MODEL = 0;
     const DELETE_MODEL = 1;
@@ -21,20 +20,19 @@ abstract class ModelListener implements ShouldQueue
      * @param bool $toStreamCompute
      * @return void
      */
-    public function proccess(
+    public function process(
         object $model,
         array $map,
         int $event,
         bool $toRedis = true,
         bool $dispatchMessage = true,
         bool $toStreamCompute = true
-    )
+    ): void
     {
         $appPrefix = config('experteam-crud.listener.prefix', 'companies');
-        $class = str_replace('App\\Models\\', '', get_class($model));
 
-        $maps = array_filter($map, function ($m) use ($class) {
-            return $m['class'] == $class;
+        $maps = array_filter($map, function ($m) use ($model) {
+            return is_a($model, $m['class']) || class_basename($model) == $m['class'];
         });
 
         foreach ($maps as $map) {
@@ -62,7 +60,7 @@ abstract class ModelListener implements ShouldQueue
      * @param int $event
      * @param string $appPrefix
      */
-    public static function toRedis(object $model, array $map, int $event, string $appPrefix)
+    public static function toRedis(object $model, array $map, int $event, string $appPrefix): void
     {
         $key = "$appPrefix.{$map['prefix']}";
 
@@ -96,7 +94,7 @@ abstract class ModelListener implements ShouldQueue
      * @param string $prefix
      * @param int $event
      */
-    public static function toRedisEntityConfig($model, string $prefix, int $event)
+    public static function toRedisEntityConfig($model, string $prefix, int $event): void
     {
         $entity = $model->entity;
         $key = "$prefix:$entity->model_type";
@@ -136,7 +134,7 @@ abstract class ModelListener implements ShouldQueue
      * @param int $event
      * @param string $appPrefix
      */
-    public static function dispatchMessage(object $model, array $map, int $event, string $appPrefix)
+    public static function dispatchMessage(object $model, array $map, int $event, string $appPrefix): void
     {
         $prefix = "$appPrefix.{$map['prefix']}";
 

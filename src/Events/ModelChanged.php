@@ -12,23 +12,19 @@ use Illuminate\Queue\SerializesModels;
 
 class ModelChanged
 {
-    use Dispatchable;
-    use InteractsWithSockets;
-    use SerializesModels;
+    use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $model;
     public $changed;
     public $old;
     public $new;
-    public $user;
+    public array $user;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Model $model, Authenticatable $user) {
-        $this->model = $model;
+    public function __construct(public Model $model, Authenticatable $user) {
         $this->changed = $model->getDirty();
         $this->old = $model->getRawOriginal();
         $this->new = $model->getAttributes();
