@@ -42,7 +42,9 @@ return [
                 'prefix' => 'companyCountry',
                 'toRedis' => true,
                 'toStreamCompute' => true,
-                'dispatchMessage' => false
+                'dispatchMessage' => false,
+                'relations' => [],
+                'appends' => [],
             ],*/
         ],
 

@@ -40,15 +40,16 @@ abstract class ModelListener
                 self::toRedis($model, $map, $event, $appPrefix);
             }
 
-            if ($dispatchMessage && $map['dispatchMessage']) {
+            if ($dispatchMessage && $map['dispatchMessage'] && env('APP_ENV') !== 'testing') {
                 self::dispatchMessage($model, $map, $event, $appPrefix);
             }
 
-            if ($toStreamCompute && $map['toStreamCompute']) {
+            if ($toStreamCompute && $map['toStreamCompute'] && env('APP_ENV') !== 'testing') {
                 Redis::xadd(
                     "streamCompute.$appPrefix.{$map['prefix']}",
                     '*',
-                    ['message' => json_encode($model->toArray())]
+                    ['message' => json_encode($model->setAppends($map['appends'] ?? [])
+                        ->load($map['relations'] ?? [])->toArray())]
                 );
             }
         }
@@ -76,11 +77,12 @@ abstract class ModelListener
                 $key .= $model->$suffix;
             }
 
-            $model->load($map['relations'] ?? []);
-
             switch ($event) {
                 case self::SAVE_MODEL:
-                    Redis::hset($key, $model->$id, json_encode($model->toArray()));
+                    Redis::hset($key, $model->$id, json_encode($model
+                        ->load($map['relations'] ?? [])
+                        ->setAppends($map['appends'] ?? [])
+                        ->toArray()));
                     break;
                 case self::DELETE_MODEL:
                     Redis::hdel($key, $model->$id);
@@ -149,7 +151,8 @@ abstract class ModelListener
                     'Content-Type' => 'application/json'
                 ],
                 'body' => json_encode([
-                    'data' => $model
+                    'data' => $model->setAppends($map['appends'] ?? [])
+                        ->load($map['relations'] ?? [])
                 ])
             ])
         ]);
