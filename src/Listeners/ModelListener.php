@@ -139,10 +139,15 @@ abstract class ModelListener
     public static function dispatchMessage(object $model, array $map, int $event, string $appPrefix): void
     {
         $prefix = "$appPrefix.{$map['prefix']}";
-
         $key = "messages.$prefix";
+
         if ($event == self::DELETE_MODEL) {
             $key .= ".deleted";
+        }
+
+        if (isset($map['appends'])) {
+            $model = $model->setAppends($map['appends'])
+                ->load($map['relations']);
         }
 
         Redis::xadd($key, '*', [
@@ -150,10 +155,7 @@ abstract class ModelListener
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ],
-                'body' => json_encode([
-                    'data' => $model->setAppends($map['appends'] ?? [])
-                        ->load($map['relations'] ?? [])
-                ])
+                'body' => json_encode(['data' => $model])
             ])
         ]);
     }
