@@ -45,12 +45,25 @@ abstract class ModelListener
             }
 
             if ($toStreamCompute && $map['toStreamCompute'] && env('APP_ENV') !== 'testing') {
-                Redis::xadd(
-                    "streamCompute.$appPrefix.{$map['prefix']}",
-                    '*',
-                    ['message' => json_encode($model->setAppends($map['appends'] ?? [])
-                        ->load($map['relations'] ?? [])->toArray())]
-                );
+                switch ($event) {
+                    case self::SAVE_MODEL:
+                        Redis::xadd(
+                            "streamCompute.$appPrefix.{$map['prefix']}",
+                            '*',
+                            ['message' => json_encode($model->setAppends($map['appends'] ?? [])
+                                ->load($map['relations'] ?? [])->toArray())]
+                        );
+                        break;
+                    case self::DELETE_MODEL:
+                        Redis::xadd(
+                            "streamCompute.$appPrefix.{$map['prefix']}.delete",
+                            '*',
+                            ['message' => json_encode($model->setAppends($map['appends'] ?? [])
+                                ->load($map['relations'] ?? [])->toArray())]
+                        );
+                        break;
+                }
+
             }
         }
     }
