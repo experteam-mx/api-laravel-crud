@@ -32,7 +32,7 @@ class ApiClient
     /**
      * @throws \Exception
      */
-    protected function get(string $endpoint, array $query = [], $useLogin = true)
+    public function get(string $endpoint, array $query = [], $useLogin = true)
     {
 
         $query = http_build_query($query);
@@ -71,7 +71,7 @@ class ApiClient
     /**
      * @throws \Exception
      */
-    protected function post(string $endpoint, array $body = [], $useLogin = true)
+    public function post(string $endpoint, array $body = [], $useLogin = true)
     {
 
         $client = $this->getClient($useLogin);
@@ -85,7 +85,7 @@ class ApiClient
     /**
      * @throws \Exception
      */
-    protected function patch(string $endpoint, array $body = [], $useLogin = true)
+    public function patch(string $endpoint, array $body = [], $useLogin = true)
     {
 
         $client = $this->getClient($useLogin);
@@ -99,7 +99,7 @@ class ApiClient
     /**
      * @throws \Exception
      */
-    protected function handleResponse(Response $res)
+    public function handleResponse(Response $res)
     {
         if (($res['status'] ?? 'error') === 'error')
             throw ValidationException::withMessages([
@@ -149,13 +149,13 @@ class ApiClient
         return $this;
     }
 
-    protected function setFullResponse(bool $fullResponse): self
+    public function setFullResponse(bool $fullResponse): self
     {
         $this->fullResponse = $fullResponse;
         return $this;
     }
 
-    protected function setTimeout(int $timeout): self
+    public function setTimeout(int $timeout): self
     {
         $this->timeout = $timeout;
         return $this;
