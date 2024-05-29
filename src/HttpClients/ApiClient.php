@@ -130,11 +130,10 @@ class ApiClient
 
     }
 
-    protected function setBaseUrl(string $baseUrl): void
+    public function setBaseUrl(string $baseUrl): self
     {
-
         $this->baseUrl = $baseUrl;
-
+        return $this;
     }
 
     protected function setAccessToken(?string $accessToken): void

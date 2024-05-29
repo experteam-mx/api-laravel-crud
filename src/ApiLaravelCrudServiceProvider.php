@@ -15,6 +15,11 @@ class ApiLaravelCrudServiceProvider extends ServiceProvider
     {
         // Event service provider
         app()->register(EventServiceProvider::class);
+
+        // Access Permisson
+        app()->bind('api-client', function () {
+            return new \Experteam\ApiLaravelCrud\HttpClients\ApiClient();
+        });
     }
 
     /**

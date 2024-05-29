@@ -34,7 +34,10 @@
         "laravel": {
             "providers": [
                 "Experteam\\ApiLaravelCrud\\ApiLaravelCrudServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "ApiClient": "Experteam\\ApiLaravelCrud\\Facades\\ApiClientFacade"
+            }
         }
     }
 }
