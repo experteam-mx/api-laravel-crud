@@ -101,10 +101,10 @@ class ApiClient
      */
     public function handleResponse(Response $res)
     {
-        if (($res['status'] ?? 'error') === 'error')
+        if ($this->checkSuccess && ($res['status'] ?? 'error') === 'error')
             throw ValidationException::withMessages([
                 'client' => class_basename($this),
-                'message' => ($res['message'] ?? '')
+                'message' => ($res['message'] ?? $res->fullResponse)
             ]);
 
         if ($this->checkSuccess && $res['status'] !== 'success')
