@@ -4,7 +4,6 @@ namespace Experteam\ApiLaravelCrud;
 
 use Experteam\ApiLaravelCrud\Models\HasNestedParam;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 trait AdvancedQueryFilters
 {
@@ -119,6 +118,35 @@ trait AdvancedQueryFilters
             case 'oeq':
                 $query->orWhere($param, $value);
                 break;
+            case 'olk-recursive':
+                if (is_array($value)) {
+                    $key = array_key_first($value);
+                    $param .= ".{$key}";
+                    $value = $value[$key];
+
+                    $query->orWhere([
+                        '$expr' => [
+                            '$gt' => [
+                                [
+                                    '$size' => [
+                                        '$filter' => [
+                                            'input' => ['$objectToArray' => '$' . $param],
+                                            'as' => 'item',
+                                            'cond' => ['$regexMatch' => [
+                                                'input' => '$$item.v',
+                                                'regex' => $value,
+                                                'options' => 'i'
+                                            ]]
+                                        ]
+                                    ]
+                                ],
+                                0
+                            ]
+                        ]
+                    ]);
+                }
+                break;
+
         }
 
         return $query;
