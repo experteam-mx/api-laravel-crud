@@ -77,7 +77,7 @@ trait AdvancedQueryFilters
                 }
                 break;
             case 'in':
-                $query->WhereIn($param, array_map(function($value) use ($query, $param) {
+                $query->WhereIn($param, array_map(function ($value) use ($query, $param) {
                     return $query->getModel()->isMongoDB ?? false ?
                         $query->getModel()->getCast($param, $value) :
                         $value;
@@ -123,27 +123,41 @@ trait AdvancedQueryFilters
                     $key = array_key_first($value);
                     $param .= ".{$key}";
                     $value = $value[$key];
-
-                    $query->orWhere([
-                        '$expr' => [
-                            '$gt' => [
-                                [
-                                    '$size' => [
-                                        '$filter' => [
-                                            'input' => ['$objectToArray' => '$' . $param],
-                                            'as' => 'item',
-                                            'cond' => ['$regexMatch' => [
-                                                'input' => '$$item.v',
-                                                'regex' => $value,
-                                                'options' => 'i'
-                                            ]]
+                    if (!empty($value)) {
+                        $query->orWhere([
+                            '$expr' => [
+                                '$gt' => [
+                                    [
+                                        '$size' => [
+                                            '$filter' => [
+                                                'input' => [
+                                                    '$cond' => [
+                                                        'if' => [
+                                                            '$and' => [
+                                                                ['$isArray' => ['$objectToArray' => '$' . $param]],
+                                                                ['$ne' => [['$objectToArray' => '$' . $param], []]]
+                                                            ]
+                                                        ],
+                                                        'then' => ['$objectToArray' => '$' . $param],
+                                                        'else' => []
+                                                    ]
+                                                ],
+                                                'as' => 'item',
+                                                'cond' => [
+                                                    '$regexMatch' => [
+                                                        'input' => '$$item.v',
+                                                        'regex' => $value,
+                                                        'options' => 'i'
+                                                    ]
+                                                ]
+                                            ]
                                         ]
-                                    ]
-                                ],
-                                0
+                                    ],
+                                    0
+                                ]
                             ]
-                        ]
-                    ]);
+                        ]);
+                    }
                 }
                 break;
 
