@@ -4,6 +4,8 @@ namespace Experteam\ApiLaravelCrud;
 
 use Experteam\ApiLaravelCrud\Models\HasNestedParam;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Redis;
+use MongoDB\BSON\Regex;
 
 trait AdvancedQueryFilters
 {
@@ -124,39 +126,11 @@ trait AdvancedQueryFilters
                     $param .= ".{$key}";
                     $value = $value[$key];
                     if (!empty($value)) {
-                        $query->orWhere([
-                            '$expr' => [
-                                '$gt' => [
-                                    [
-                                        '$size' => [
-                                            '$filter' => [
-                                                'input' => [
-                                                    '$cond' => [
-                                                        'if' => [
-                                                            '$and' => [
-                                                                ['$isArray' => ['$objectToArray' => '$' . $param]],
-                                                                ['$ne' => [['$objectToArray' => '$' . $param], []]]
-                                                            ]
-                                                        ],
-                                                        'then' => ['$objectToArray' => '$' . $param],
-                                                        'else' => []
-                                                    ]
-                                                ],
-                                                'as' => 'item',
-                                                'cond' => [
-                                                    '$regexMatch' => [
-                                                        'input' => '$$item.v',
-                                                        'regex' => $value,
-                                                        'options' => 'i'
-                                                    ]
-                                                ]
-                                            ]
-                                        ]
-                                    ],
-                                    0
-                                ]
-                            ]
-                        ]);
+                        $redisLanguages = Redis::hgetAll('catalogs.language.code');
+                        $redisLanguages = array_keys($redisLanguages);
+                        foreach ($redisLanguages as $lang) {
+                            $query->orWhere($param . ".{$lang}", 'regex', new Regex("{$value}", 'i'));
+                        }
                     }
                 }
                 break;
