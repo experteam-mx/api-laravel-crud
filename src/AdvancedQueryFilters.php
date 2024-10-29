@@ -85,6 +85,13 @@ trait AdvancedQueryFilters
                         $value;
                 }, explode(',', $value)));
                 break;
+            case 'nin':
+                $query->WhereNotIn($param, array_map(function ($value) use ($query, $param) {
+                    return $query->getModel()->isMongoDB ?? false ?
+                        $query->getModel()->getCast($param, $value) :
+                        $value;
+                }, explode(',', $value)));
+                break;
             case 'olk':
                 if (!empty($value)) {
                     $query->orWhere($param, 'like', "%{$value}%");
