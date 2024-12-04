@@ -4,6 +4,7 @@ namespace Experteam\ApiLaravelCrud;
 
 use Experteam\ApiLaravelCrud\Models\HasNestedParam;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use MongoDB\BSON\Regex;
 
@@ -11,15 +12,9 @@ trait AdvancedQueryFilters
 {
     use HasNestedParam;
 
-    /**
-     * @param Builder $query
-     * @param array $params
-     * @return Builder|mixed
-     */
-    public function queryFilter($query, array $params)
+    public function queryFilter($query, array $params = [], ?array $filters)
     {
-        $filters = request()->query
-            ->all();
+        $filters = is_null($filters) ? request()->query->all() : $filters;
 
         $pendingFilters = [];
         $table = $query->getModel()->getTable();
