@@ -12,7 +12,7 @@ trait AdvancedQueryFilters
 {
     use HasNestedParam;
 
-    public function queryFilter($query, array $params = [], ?array $filters)
+    public function queryFilter($query, array $params = [], ?array $filters = null)
     {
         $filters = is_null($filters) ? request()->query->all() : $filters;
 
