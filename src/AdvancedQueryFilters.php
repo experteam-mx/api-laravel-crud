@@ -119,6 +119,9 @@ trait AdvancedQueryFilters
             case 'eq':
                 $query->Where($param, $value);
                 break;
+            case 'ne':
+                $query->Where($param, '!=', $value);
+                break;
             case 'oeq':
                 $query->orWhere($param, $value);
                 break;
