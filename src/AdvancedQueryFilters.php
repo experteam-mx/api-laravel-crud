@@ -117,7 +117,10 @@ trait AdvancedQueryFilters
                 $query->orWhere($param, '<=', $value);
                 break;
             case 'eq':
-                $query->Where($param, $value);
+                if ($value === '[null]')
+                    $query->whereNull($param);
+                else
+                    $query->Where($param, $value);
                 break;
             case 'ne':
                 $query->Where($param, '!=', $value);
