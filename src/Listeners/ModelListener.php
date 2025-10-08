@@ -47,7 +47,7 @@ abstract class ModelListener
             if ($toStreamCompute && $map['toStreamCompute'] && env('APP_ENV') !== 'testing') {
                 switch ($event) {
                     case self::SAVE_MODEL:
-                        Redis::xadd(
+                        Redis::connection('stream_compute')->xadd(
                             "streamCompute.$appPrefix.{$map['prefix']}",
                             '*',
                             ['message' => json_encode(
@@ -59,7 +59,7 @@ abstract class ModelListener
                         );
                         break;
                     case self::DELETE_MODEL:
-                        Redis::xadd(
+                        Redis::connection('stream_compute')->xadd(
                             "streamCompute.$appPrefix.{$map['prefix']}.delete",
                             '*',
                             ['message' => json_encode($model->setAppends($map['appends'] ?? [])
