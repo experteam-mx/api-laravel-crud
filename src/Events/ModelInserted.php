@@ -10,19 +10,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ModelDeleted
+class ModelInserted
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $changed;
-    public $old;
-    public $new = null;
+    public $old = null;
+    public $new;
     public array $user;
 
     public function __construct(public Model $model, ?Authenticatable $user = null)
     {
         $this->changed = $model->toArray();
-        $this->old = $model->toArray();
+        $this->new = $model->toArray();
         $this->user = [
             'id' => $user->id ?? null,
             'username' => $user->username ?? null,
