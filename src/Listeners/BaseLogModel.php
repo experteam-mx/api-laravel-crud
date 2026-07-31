@@ -11,9 +11,9 @@ class BaseLogModel
 
     public function register($event): void
     {
-        $api = config('experteam-crud.prefix');
+        $api = config('experteam-crud.listener.prefix');
 
-        if ($this->validateAction($api)) {
+        if (!$this->validateAction($api)) {
             $this->saveToLogs($event);
             return;
         }
@@ -45,9 +45,9 @@ class BaseLogModel
         ]);
     }
 
-    protected function saveToAudits($event, $api): void
+    protected function saveToAudits($event, string $api): void
     {
-        DB::connection('mongodb_audits')->collection('transaction_logs')->insert([
+        DB::connection('mongodb_audits')->table('transaction_logs')->insert([
             'username' => $event->user['username'],
             'api' => Str::headline($api),
             'table' => Str::headline(class_basename($event->model)),

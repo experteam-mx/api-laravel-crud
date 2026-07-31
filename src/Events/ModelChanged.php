@@ -21,9 +21,9 @@ class ModelChanged
 
     public function __construct(public Model $model, Authenticatable $user)
     {
-        $this->changed = $model->getDirty();
-        $this->old = $model->getRawOriginal() ?? null;
-        $this->new = $model->getAttributes();
+        $this->changed = $this->model->getChanges();
+        $this->old = $this->model->getPrevious();
+        $this->new = $this->model->getChanges();
         $this->user = [
             'id' => $user->id,
             'username' => $user->username,

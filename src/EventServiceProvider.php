@@ -20,8 +20,8 @@ class EventServiceProvider extends ServiceProvider
             LogModelChanged::class,
         ],
         ModelDeleted::class => [
-            DeleteModel::class,
             LogModelDeleted::class,
+            DeleteModel::class,
         ],
         ModelInserted::class => [
             LogModelInserted::class,
