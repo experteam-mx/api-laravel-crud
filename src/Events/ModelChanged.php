@@ -19,14 +19,10 @@ class ModelChanged
     public $new;
     public array $user;
 
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
-    public function __construct(public Model $model, Authenticatable $user) {
+    public function __construct(public Model $model, Authenticatable $user)
+    {
         $this->changed = $model->getDirty();
-        $this->old = $model->getRawOriginal();
+        $this->old = $model->getRawOriginal() ?? null;
         $this->new = $model->getAttributes();
         $this->user = [
             'id' => $user->id,
@@ -34,11 +30,6 @@ class ModelChanged
         ];
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return Channel
-     */
     public function broadcastOn()
     {
         return new PrivateChannel('channel-name');
