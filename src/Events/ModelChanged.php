@@ -21,9 +21,10 @@ class ModelChanged
 
     public function __construct(public Model $model, mixed $user)
     {
-        $this->changed = $this->model->getChanges();
-        $this->old = $this->model->getPrevious();
-        $this->new = $this->model->getChanges();
+        $this->changed = $this->model->getDirty();
+        $this->old = array_filter($model->getOriginal(),
+            fn ($value) => in_array($value, array_keys($this->changed)), ARRAY_FILTER_USE_KEY);
+        $this->new = $this->model->getDirty();
         $this->user = [
             'id' => $user->id ?? null,
             'username' => $user->username ?? null,
