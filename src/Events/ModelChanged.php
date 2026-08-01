@@ -19,14 +19,14 @@ class ModelChanged
     public $new;
     public array $user;
 
-    public function __construct(public Model $model, Authenticatable $user)
+    public function __construct(public Model $model, mixed $user)
     {
         $this->changed = $this->model->getChanges();
         $this->old = $this->model->getPrevious();
         $this->new = $this->model->getChanges();
         $this->user = [
-            'id' => $user->id,
-            'username' => $user->username,
+            'id' => $user->id ?? null,
+            'username' => $user->username ?? null,
         ];
     }
 

@@ -19,7 +19,7 @@ class ModelDeleted
     public $new = null;
     public array $user;
 
-    public function __construct(public Model $model, ?Authenticatable $user = null)
+    public function __construct(public Model $model, mixed $user = null)
     {
         $this->changed = $model->toArray();
         $this->old = $model->toArray();

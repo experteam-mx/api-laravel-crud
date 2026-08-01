@@ -19,7 +19,7 @@ class ModelInserted
     public $new;
     public array $user;
 
-    public function __construct(public Model $model, ?Authenticatable $user = null)
+    public function __construct(public Model $model, mixed $user = null)
     {
         $this->changed = $model->toArray();
         $this->new = $model->toArray();
