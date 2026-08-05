@@ -22,14 +22,15 @@ abstract class ModelListener
      */
     public function process(
         object $model,
-        array  $map,
-        int    $event,
-        bool   $toRedis = true,
-        bool   $dispatchMessage = true,
-        bool   $toStreamCompute = true
-    ): void
-    {
+        array $map,
+        int $event,
+        bool $toRedis = true,
+        bool $dispatchMessage = true,
+        bool $toStreamCompute = true
+    ): void {
         $appPrefix = config('experteam-crud.listener.prefix', 'companies');
+
+        $streamComputeRedis = config('experteam-crud.stream_compute_redis', 'stream_compute');
 
         $maps = array_filter($map, function ($m) use ($model) {
             return is_a($model, $m['class']) || class_basename($model) == $m['class'];
@@ -47,27 +48,33 @@ abstract class ModelListener
             if ($toStreamCompute && $map['toStreamCompute'] && env('APP_ENV') !== 'testing') {
                 switch ($event) {
                     case self::SAVE_MODEL:
-                        Redis::connection('stream_compute')->xadd(
+                        Redis::connection($streamComputeRedis)->xadd(
                             "streamCompute.$appPrefix.{$map['prefix']}",
                             '*',
-                            ['message' => json_encode(
-                                self::withTranslations($model
-                                    ->load($map['relations'] ?? [])
-                                    ->setAppends($map['appends'] ?? [])
-                                ))
+                            [
+                                'message' => json_encode(
+                                    self::withTranslations(
+                                        $model
+                                            ->load($map['relations'] ?? [])
+                                            ->setAppends($map['appends'] ?? [])
+                                    )
+                                )
                             ]
                         );
                         break;
                     case self::DELETE_MODEL:
-                        Redis::connection('stream_compute')->xadd(
+                        Redis::connection($streamComputeRedis)->xadd(
                             "streamCompute.$appPrefix.{$map['prefix']}.delete",
                             '*',
-                            ['message' => json_encode($model->setAppends($map['appends'] ?? [])
-                                ->load($map['relations'] ?? [])->toArray())]
+                            [
+                                'message' => json_encode(
+                                    $model->setAppends($map['appends'] ?? [])
+                                        ->load($map['relations'] ?? [])->toArray()
+                                )
+                            ]
                         );
                         break;
                 }
-
             }
         }
     }
@@ -96,11 +103,14 @@ abstract class ModelListener
 
             switch ($event) {
                 case self::SAVE_MODEL:
-                    Redis::hset($key, $model->$id,
+                    Redis::hset(
+                        $key,
+                        $model->$id,
                         json_encode(
-                            self::withTranslations($model
-                                ->load($map['relations'] ?? [])
-                                ->setAppends($map['appends'] ?? [])
+                            self::withTranslations(
+                                $model
+                                    ->load($map['relations'] ?? [])
+                                    ->setAppends($map['appends'] ?? [])
                             )
                         )
                     );
@@ -171,10 +181,13 @@ abstract class ModelListener
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ],
-                'body' => json_encode(['data' => self::withTranslations($model
-                    ->load($map['relations'] ?? [])
-                    ->setAppends($map['appends'] ?? [])
-                )])
+                'body' => json_encode([
+                    'data' => self::withTranslations(
+                        $model
+                            ->load($map['relations'] ?? [])
+                            ->setAppends($map['appends'] ?? [])
+                    )
+                ])
             ])
         ]);
     }
@@ -183,9 +196,14 @@ abstract class ModelListener
     {
         $attributes = $model->toArray();
 
-        if (in_array('Nevadskiy\Translatable\Strategies\SingleTableExtended\HasTranslations', class_uses_recursive($model), true)) {
-            $locales = array_column(array_map(fn ($v) => json_decode($v),
-                Redis::hgetall('catalogs.language')), 'code');
+        if (in_array(
+            'Nevadskiy\Translatable\Strategies\SingleTableExtended\HasTranslations',
+            class_uses_recursive($model),
+            true
+        )) {
+            $locales = array_column(array_map(fn($v) => json_decode($v),
+                Redis::hgetall('catalogs.language')),
+                'code');
 
             $translations = [];
 

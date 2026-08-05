@@ -23,7 +23,7 @@ return [
     |
     */
     'companies' => [
-        'base_url' => env('DHL_API_COMPANIES_URL','https://companies.dhl.com'),
+        'base_url' => env('DHL_API_COMPANIES_URL', 'https://companies.dhl.com'),
         'access_token' => null,
 
         'parameter_values' => [
@@ -57,6 +57,7 @@ return [
     |--------------------------------------------------------------------------
     |
     */
+    'stream_compute_redis' => env('STREAM_COMPUTE_REDIS', 'stream_compute'),
 
     'listener' => [
         /*
