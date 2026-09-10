@@ -26,6 +26,7 @@ class ModelInserted
         $this->user = [
             'id' => $user->id ?? null,
             'username' => $user->username ?? null,
+            'session' => $user->session ?? null,
         ];
     }
 
