@@ -48,6 +48,7 @@ class BaseLogModel
     protected function saveToAudits($event, string $api): void
     {
         DB::connection('mongodb_audits')->table('transaction_logs')->insert([
+            'country_id' => $event->user['session']['country_id'] ?? null,
             'username' => $event->user['username'],
             'api' => Str::headline($api),
             'table' => Str::headline(class_basename($event->model)),
